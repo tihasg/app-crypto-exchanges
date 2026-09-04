@@ -21,6 +21,7 @@ fun CryptoTopBar(
     title: String,
     modifier: Modifier = Modifier,
     onBackClick: (() -> Unit)? = null,
+    backContentDescription: String = "Back",
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
@@ -31,7 +32,7 @@ fun CryptoTopBar(
                 IconButton(onClick = onClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
+                        contentDescription = backContentDescription,
                     )
                 }
             }

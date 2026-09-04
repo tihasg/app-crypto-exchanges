@@ -2,37 +2,134 @@
 
 Aplicativo Android que consulta a API da [CoinMarketCap](https://coinmarketcap.com/api/documentation/v1/)
 e exibe uma lista de exchanges de criptomoedas e, ao tocar em uma delas, seus detalhes junto das
-moedas negociadas. Construído com Kotlin, Jetpack Compose e arquitetura MVI + Clean Architecture.
-
-> Este README é a versão inicial (escopo da fase de scaffold). Será substituído por uma versão
-> completa — com diagrama de arquitetura, decisões e trade-offs — ao final do desenvolvimento.
+moedas negociadas. Construído com Kotlin, Jetpack Compose, MVI e Clean Architecture, separada em
+módulos Gradle.
 
 ## Setup
 
 1. Copie `local.properties.example` para `local.properties` (arquivo ignorado pelo git).
 2. Preencha `sdk.dir` com o caminho do seu Android SDK.
 3. Preencha `CMC_API_KEY` com uma chave da [CoinMarketCap Pro API](https://pro.coinmarketcap.com/account).
-   A chave nunca é versionada: ela é lida de `local.properties` e exposta ao código via
-   `BuildConfig.CMC_API_KEY` (wiring feito na fase de DI/app).
+   A chave nunca é versionada: ela é lida de `local.properties` em tempo de build e exposta via
+   `BuildConfig.CMC_API_KEY`, consumida só dentro dos módulos `di`/`data` — nunca logada.
+4. **Endpoints de exchange da CoinMarketCap exigem um plano pago.** Uma chave gratuita (Basic)
+   não consegue chamar `/v1/exchange/*`. Por isso:
+   - Se `CMC_API_KEY` estiver **vazia**, o app usa `FakeExchangeRepository` (dados fixos de
+     6 exchanges reais — Binance, Coinbase, Kraken, Bitfinex, KuCoin, OKX — com logos reais da
+     CDN pública da CMC) para a tela funcionar de ponta a ponta sem chave nenhuma.
+   - Se `CMC_API_KEY` estiver **preenchida**, o app usa `ExchangeRepositoryImpl`, que bate nos
+     endpoints reais via Retrofit. Com uma chave gratuita isso deve retornar erro 401/403
+     (mapeado para `DomainError.Unauthorized`) — o caminho de erro + retry cobre esse caso.
+   - A troca acontece em `di/DataModule.kt`.
 
-## Módulos
+## Arquitetura
 
-| Módulo          | Tipo                | Responsabilidade                                                        |
-|-----------------|---------------------|---------------------------------------------------------------------------|
-| `core-ds`       | Android library      | Design system: cores, tipografia, dimens e componentes Compose reutilizáveis (`Crypto*`). Sem dependência de domínio/dados. |
-| `core-network`  | Kotlin/JVM library   | Infra de rede reutilizável: factories de `OkHttpClient`/`Retrofit` (kotlinx.serialization), interceptor de API key e `safeApiCall`/`NetworkResult` para nunca deixar exceção de rede vazar. Sem dependência de Android/Hilt/domínio. |
-| `app`           | Android application  | Entry point. Vai concentrar as camadas `domain`/`data`/`presentation` (como módulos ou packages — decisão registrada aqui conforme evolui) e a injeção de dependência (Hilt). |
+Clean Architecture (domain → data → presentation) + MVI na presentation, separada em módulos
+Gradle independentes:
+
+```
+                        ┌────────────────────────────────────────┐
+                        │                  app                    │
+                        │  presentation/  (Compose + ViewModels)  │
+                        │  di/            (Koin modules)          │
+                        │  navigation/    (Navigation Compose)    │
+                        └───────┬───────────────────┬─────────────┘
+                                │                   │
+                    depends on ▼                   ▼ depends on
+                    ┌───────────────┐       ┌───────────────┐
+                    │     data       │──────▶│    domain      │
+                    │ DTOs, mappers, │  uses │ entities,      │
+                    │ RemoteDataSrc, │ repo  │ DomainError,   │
+                    │ *RepositoryImpl│ contr.│ use cases,     │
+                    │ FakeRepository │       │ repo contracts │
+                    └───────┬────────┘       └───────────────┘
+                            │ uses                    ▲
+                            ▼                          │ (no dependency)
+                    ┌───────────────┐                  │
+                    │ core-network   │                  │
+                    │ Retrofit/OkHttp│                  │
+                    │ factories,     │                  │
+                    │ safeApiCall,   │                  │
+                    │ NetworkResult  │                  │
+                    └───────────────┘
+
+        app also depends directly on core-ds (Compose design system, leaf module,
+        no dependency on domain/data/network).
+```
+
+- **`domain`** — Kotlin/JVM puro. Entidades (`Exchange`, `ExchangeDetail`, `Currency`), `DomainError`
+  selado, `DomainResult<T>` (Success/Error, nunca uma exceção crua), interfaces de repositório e
+  use cases (`GetExchangesUseCase`, `GetExchangeDetailUseCase`). Zero import de Android, Retrofit,
+  Koin ou qualquer framework.
+- **`data`** — Kotlin/JVM puro. DTOs `@Serializable`, mappers DTO→domain, `ExchangeApiService`
+  (Retrofit), `ExchangeRemoteDataSource` (usa `safeApiCall` do `core-network`), `ExchangeRepositoryImpl`
+  (traduz `NetworkError` → `DomainError` tipado) e `FakeExchangeRepository`.
+- **`core-network`** — Kotlin/JVM puro, reutilizável fora deste app. Factories de `OkHttpClient`/
+  `Retrofit` (kotlinx.serialization), `ApiKeyInterceptor`, e `NetworkResult`/`safeApiCall` para
+  garantir que nenhuma exceção de rede/parsing escape sem ser tratada.
+- **`core-ds`** — Android library. Design system Compose (cores vermelho/branco, tipografia,
+  `CryptoButton`, `CryptoCard`, `CryptoLogo`, `LoadingView`/`EmptyView`/`ErrorView`, etc). Não
+  conhece domínio, dados nem rede.
+- **`app`** — camada de apresentação (packages, não módulo próprio, já que precisa de
+  Activity/Compose/Hilt-equivalente de qualquer forma): `presentation/list` e `presentation/detail`
+  (contrato MVI + ViewModel + tela), `di/` (módulos Koin), `navigation/` (rotas type-safe via
+  `kotlinx.serialization` + Navigation Compose 2.8).
+
+### Contrato MVI
+
+Cada tela tem `UiState` (data class imutável), `Intent` (sealed interface de ações do usuário) e
+`Effect` (sealed interface, one-shot via `Channel`, para navegação/side-effects). O ViewModel expõe
+`StateFlow<UiState>` e recebe `Intent`s via `onIntent(...)`, chamando os use cases do `domain`.
+
+## Decisões e trade-offs
+
+- **Koin em vez de Hilt.** Sem geração de código/KAPT, DI explícita e fácil de ler nos módulos
+  `di/*Module.kt`. `domain`/`data` não têm nenhuma anotação de DI — são construídos de fora, pelos
+  módulos Koin em `app`.
+- **kotlinx.serialization em vez de Moshi/Gson.** Já usado pelas rotas type-safe do Navigation
+  Compose 2.8+, então reaproveitar para os DTOs evita uma segunda lib de JSON.
+- **`data`/`domain`/`core-network` são módulos Kotlin/JVM puros**, não Android library. Mais rápido
+  para compilar/testar e força a ausência de vazamento de `Context`/Android nessas camadas.
+- **Fake repository em vez de mockar o Retrofit.** Como os endpoints de exchange são pagos, uma
+  implementação completa só de mock (Retrofit real nunca testável em avaliação) pareceu menos
+  honesta que ter as duas implementações reais lado a lado, trocadas por uma condição simples.
+- **`getExchangeDetail` degrada graciosamente**: se `market-pairs/latest` falhar mas `exchange/info`
+  funcionar, a tela mostra os detalhes da exchange com a lista de moedas vazia, em vez de falhar a
+  tela inteira — a lista de moedas é tratada como informação suplementar.
+- **Datas e valores ficam crus no domínio** (`String` ISO-8601, `Double`); formatação
+  (`formatUsd`/`formatDate`/`formatPercent`) é responsabilidade da presentation, em
+  `presentation/common/Formatters.kt`.
+- **Versões de dependência**: `Retrofit 2.11.0` / `OkHttp 4.12.0` foram mantidos deliberadamente
+  (não as versões mais novas sugeridas pela IDE, que seriam major bumps — Retrofit 3 / OkHttp 5 —
+  fora de uma faixa que eu conseguisse validar com confiança sem quebrar o build). `Coil` ficou em
+  `3.0.4` porque `3.6.2` força uma versão de `kotlin-stdlib` incompatível com o Kotlin `2.2.10` do
+  projeto.
+- Não foi feita uma auditoria formal de contraste WCAG na paleta vermelho/branco do `core-ds` —
+  ajuste manual foi feito visualmente, não com ferramenta.
 
 ## Rodando
 
 ```
-./gradlew build      # compila todos os módulos e roda os testes unitários
-./gradlew test        # apenas testes unitários
+./gradlew build              # compila todos os módulos e roda os testes unitários
+./gradlew test                # só os testes unitários (todos os módulos)
+./gradlew :app:connectedCheck # testes de UI (Compose UI Test), precisa de emulador/device conectado
 ```
 
 ## Testes
 
-- `core-network` já tem testes unitários (JUnit4 + MockWebServer + kotlinx-coroutines-test)
-  cobrindo o interceptor de API key e o mapeamento de exceções de rede em `NetworkResult`.
-- Demais camadas (domain/data/presentation) terão testes unitários e de UI adicionados
-  conforme cada fase for implementada.
+| Módulo   | O que é testado                                                                 |
+|----------|-----------------------------------------------------------------------------------|
+| `core-network` | `ApiKeyInterceptor` (MockWebServer) e `safeApiCall` (mapeamento de cada tipo de exceção → `NetworkResult`). |
+| `domain` | `GetExchangesUseCase` (ordenação por volume, nulls por último, propagação de erro) e `GetExchangeDetailUseCase`. |
+| `data`   | Mappers DTO→domínio, mapeamento `NetworkError`→`DomainError`, `ExchangeRemoteDataSource`, composição de chamadas em `ExchangeRepositoryImpl` (sucesso, cada chamada falhando isoladamente, degradação de moedas) e `FakeExchangeRepository`. |
+| `app` (unit) | `ExchangeListViewModel`/`ExchangeDetailViewModel` — estado de loading inicial, sucesso, erro, retry e efeitos one-shot (navegação, abrir URL), via `StandardTestDispatcher` + `MockK` + Turbine (só para o canal de efeitos, que não sofre do problema de conflação do `StateFlow`). |
+| `app` (androidTest) | Compose UI Test para lista (renderiza item, clique dispara intent de navegação, estado de erro + retry) e detalhe (renderiza campos, estado de erro + retry). |
+
+## Endpoints premium mockados
+
+Os quatro endpoints de exchange (`/v1/exchange/map`, `/v1/exchange/info`,
+`/v1/exchange/quotes/latest`, `/v1/exchange/market-pairs/latest`) exigem um plano pago da
+CoinMarketCap. A implementação real (`ExchangeRepositoryImpl`) existe e é testada normalmente
+(com o `RemoteDataSource` mockado via MockK), mas para a avaliação funcionar sem uma chave paga,
+`FakeExchangeRepository` fica ativo por padrão sempre que `CMC_API_KEY` está vazia — ver a seção
+Setup acima.

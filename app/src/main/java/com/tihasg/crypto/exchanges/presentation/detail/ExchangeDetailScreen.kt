@@ -79,6 +79,7 @@ internal fun ExchangeDetailContent(
             CryptoTopBar(
                 title = uiState.exchangeDetail?.name ?: "Detalhes",
                 onBackClick = { onIntent(ExchangeDetailIntent.OnBackClick) },
+                backContentDescription = "Voltar",
             )
         },
     ) { innerPadding ->
