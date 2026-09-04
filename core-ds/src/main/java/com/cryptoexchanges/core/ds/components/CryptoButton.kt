@@ -17,13 +17,8 @@ import com.cryptoexchanges.core.ds.preview.CryptoPreviewWrapper
 import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 
-/** Visual style of [CryptoButton]: filled (primary action) or outlined (secondary action). */
 enum class CryptoButtonVariant { Primary, Secondary }
 
-/**
- * Primary action button of the design system. While [isLoading] is true it shows a spinner
- * in place of [text] and disables the click, regardless of [enabled].
- */
 @Composable
 fun CryptoButton(
     text: String,

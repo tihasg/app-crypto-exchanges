@@ -13,7 +13,6 @@ import com.cryptoexchanges.core.ds.preview.CryptoPreviewWrapper
 import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 
-/** Rounded, elevated container used for list items (e.g. an exchange row). */
 @Composable
 fun CryptoCard(
     modifier: Modifier = Modifier,

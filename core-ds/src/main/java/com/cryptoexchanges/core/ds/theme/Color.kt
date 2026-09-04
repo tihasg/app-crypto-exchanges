@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// Base palette. Never reference these directly from screens/components — go through the
-// semantic tokens below (MaterialTheme.colorScheme / MaterialTheme.cryptoColors) instead.
 private val Red500 = Color(0xFFE53935)
 private val Red700 = Color(0xFFB71C1C)
 private val Red100 = Color(0xFFFFCDD2)
@@ -62,10 +60,6 @@ val CryptoDarkColorScheme: ColorScheme = darkColorScheme(
     onError = Neutral900,
 )
 
-/**
- * Semantic tokens that don't map onto Material's [ColorScheme] slots, e.g. price variation
- * colors. Access via [MaterialTheme.cryptoColors] inside a [CryptoExchangesTheme].
- */
 data class CryptoColors(
     val positiveValue: Color,
     val negativeValue: Color,
@@ -86,7 +80,6 @@ val DarkCryptoColors = CryptoColors(
 
 val LocalCryptoColors = staticCompositionLocalOf { LightCryptoColors }
 
-/** Semantic color tokens not covered by [MaterialTheme.colorScheme], e.g. `positiveValue`. */
 val MaterialTheme.cryptoColors: CryptoColors
     @Composable
     get() = LocalCryptoColors.current

@@ -15,10 +15,6 @@ import androidx.compose.ui.Modifier
 import com.cryptoexchanges.core.ds.preview.CryptoPreviewWrapper
 import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 
-/**
- * Top app bar shared by list and detail screens. Pass [onBackClick] to show a back navigation
- * icon (detail screens); leave it `null` for root screens (e.g. the exchange list).
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CryptoTopBar(

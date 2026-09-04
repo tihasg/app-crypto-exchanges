@@ -6,10 +6,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/**
- * Full Material 3 type scale. Uses the system default font family — no custom font is bundled
- * with this module, so there is no font license to track here.
- */
 val CryptoTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,

@@ -24,7 +24,6 @@ import com.cryptoexchanges.core.ds.preview.CryptoPreviewWrapper
 import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 
-/** Centered spinner for a screen/section that is loading. */
 @Composable
 fun LoadingView(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -32,7 +31,6 @@ fun LoadingView(modifier: Modifier = Modifier) {
     }
 }
 
-/** Icon + message for a screen/section that loaded successfully but has no data. */
 @Composable
 fun EmptyView(
     message: String,
@@ -60,10 +58,6 @@ fun EmptyView(
     }
 }
 
-/**
- * Icon + message + retry action for a screen/section that failed to load. Key composable for
- * the app's resiliency requirement: every failure surface should route through this.
- */
 @Composable
 fun ErrorView(
     message: String,

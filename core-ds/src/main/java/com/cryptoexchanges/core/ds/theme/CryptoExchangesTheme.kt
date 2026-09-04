@@ -9,11 +9,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-/**
- * Applies the CryptoExchanges Material 3 theme (colors, typography, shapes) and exposes the
- * semantic [CryptoColors] tokens via [LocalCryptoColors]. Wrap the app/screen root with this —
- * every [com.cryptoexchanges.core.ds.components] composable expects to be hosted inside it.
- */
 @Composable
 fun CryptoExchangesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

@@ -26,3 +26,4 @@ rootProject.name = "app-crypto-exchanges.git"
 include(":app")
 include(":core-ds")
 include(":core-network")
+include(":domain")

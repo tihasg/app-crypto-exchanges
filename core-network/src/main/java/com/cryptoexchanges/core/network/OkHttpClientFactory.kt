@@ -5,7 +5,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
-/** Builds the [OkHttpClient] shared by every Retrofit service in the app. */
 object OkHttpClientFactory {
     fun create(
         config: NetworkConfig,

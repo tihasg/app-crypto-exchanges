@@ -12,10 +12,6 @@ import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 import com.cryptoexchanges.core.ds.theme.cryptoColors
 
-/**
- * Value text colored by [isPositive]: [MaterialTheme.cryptoColors] positive/negative for a
- * known sign, neutral `onSurface` when the sign is unknown.
- */
 @Composable
 fun PriceText(
     value: String,

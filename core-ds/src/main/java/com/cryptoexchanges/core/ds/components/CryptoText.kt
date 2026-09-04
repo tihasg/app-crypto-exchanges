@@ -12,7 +12,6 @@ import com.cryptoexchanges.core.ds.preview.CryptoPreviewWrapper
 import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 
-/** Section heading, e.g. above a group of fee rows in the exchange detail screen. */
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
@@ -23,7 +22,6 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** Label/value pair on a single row, e.g. `maker_fee` on the left and `0.10%` on the right. */
 @Composable
 fun LabelValueRow(label: String, value: String, modifier: Modifier = Modifier) {
     Row(

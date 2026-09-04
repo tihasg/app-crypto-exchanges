@@ -6,7 +6,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-/** Builds the [Retrofit] instance used to create API service interfaces. */
 object RetrofitFactory {
     private val json = Json {
         ignoreUnknownKeys = true

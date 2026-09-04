@@ -21,7 +21,6 @@ import com.cryptoexchanges.core.ds.preview.CryptoPreviewWrapper
 import com.cryptoexchanges.core.ds.preview.CryptoThemePreviews
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 
-/** Async-loaded exchange/coin logo with a spinner placeholder and a fallback icon on error. */
 @Composable
 fun CryptoLogo(
     url: String?,

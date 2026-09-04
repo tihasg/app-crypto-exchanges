@@ -6,10 +6,6 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-/**
- * Runs a suspending Retrofit call and converts any thrown exception into a [NetworkResult],
- * so no network/parsing exception ever escapes past this boundary.
- */
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
     return try {
         NetworkResult.Success(apiCall())

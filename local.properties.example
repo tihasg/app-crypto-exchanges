@@ -1,0 +1,7 @@
+## Copy this file to "local.properties" (same directory) and fill in your own values.
+## "local.properties" is git-ignored — never commit your real API key.
+
+sdk.dir=/path/to/your/Android/Sdk
+
+## CoinMarketCap Pro API key. Get one at https://pro.coinmarketcap.com/account
+CMC_API_KEY=coloque_sua_chave_aqui
