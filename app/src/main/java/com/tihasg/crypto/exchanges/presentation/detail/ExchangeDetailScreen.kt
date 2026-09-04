@@ -68,7 +68,7 @@ fun ExchangeDetailScreen(
 }
 
 @Composable
-private fun ExchangeDetailContent(
+internal fun ExchangeDetailContent(
     uiState: ExchangeDetailUiState,
     onIntent: (ExchangeDetailIntent) -> Unit,
     modifier: Modifier = Modifier,

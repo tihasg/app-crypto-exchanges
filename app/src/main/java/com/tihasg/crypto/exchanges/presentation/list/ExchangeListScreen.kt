@@ -58,7 +58,7 @@ fun ExchangeListScreen(
 }
 
 @Composable
-private fun ExchangeListContent(
+internal fun ExchangeListContent(
     uiState: ExchangeListUiState,
     onIntent: (ExchangeListIntent) -> Unit,
     modifier: Modifier = Modifier,
