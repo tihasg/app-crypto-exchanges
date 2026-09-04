@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "com.tihasg.crypto.exchanges"
     compileSdk {
-        version = release(36) {
+        version = release(37) {
             minorApiLevel = 1
         }
     }
@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-ds"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
