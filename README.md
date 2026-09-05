@@ -7,6 +7,15 @@ e exibe uma lista de exchanges de criptomoedas e, ao tocar em uma delas, seus de
 moedas negociadas. Construído com Kotlin, Jetpack Compose, MVI e Clean Architecture, separada em
 módulos Gradle.
 
+## Demo
+
+| Tema claro | Tema escuro |
+|---|---|
+| ![Demo tema claro](video/tema-light.gif) | ![Demo tema escuro](video/tema-dark.gif) |
+
+Vídeos originais em qualidade completa: [`video/tema-light.mp4`](video/tema-light.mp4) e
+[`video/tema-dark.mp4`](video/tema-dark.mp4).
+
 ## Setup
 
 1. Copie `local.properties.example` para `local.properties` (arquivo ignorado pelo git).
