@@ -37,6 +37,7 @@ import com.cryptoexchanges.core.ds.theme.CryptoDimens
 import com.cryptoexchanges.domain.model.ExchangeDetail
 import com.tihasg.crypto.exchanges.R
 import com.tihasg.crypto.exchanges.presentation.common.formatDate
+import com.tihasg.crypto.exchanges.presentation.common.formatDescription
 import com.tihasg.crypto.exchanges.presentation.common.formatPercent
 import com.tihasg.crypto.exchanges.presentation.common.formatUsd
 import com.tihasg.crypto.exchanges.presentation.common.toMessage
@@ -162,7 +163,7 @@ private fun ExchangeDetailHeader(
         val description = detail.description
         if (!description.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(CryptoDimens.spacingM))
-            Text(text = description, style = MaterialTheme.typography.bodyMedium)
+            Text(text = formatDescription(description), style = MaterialTheme.typography.bodyMedium)
         }
 
         val websiteUrl = detail.websiteUrl

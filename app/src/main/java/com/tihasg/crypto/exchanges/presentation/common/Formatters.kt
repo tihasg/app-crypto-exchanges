@@ -23,3 +23,10 @@ fun formatDate(iso: String?): String {
     val parsed = runCatching { parser.parse(iso) }.getOrNull() ?: return iso
     return SimpleDateFormat("MMM d, yyyy", Locale.US).format(parsed)
 }
+
+private val markdownHeadingRegex = Regex("(?m)^#{1,6}\\s+")
+private val markdownLinkRegex = Regex("\\[([^]]+)]\\(([^)]+)\\)")
+
+fun formatDescription(raw: String): String = raw
+    .replace(markdownHeadingRegex, "")
+    .replace(markdownLinkRegex, "$1")

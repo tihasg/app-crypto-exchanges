@@ -23,11 +23,14 @@ Vídeos originais em qualidade completa: [`video/tema-light.mp4`](video/tema-lig
 3. Preencha `CMC_API_KEY` com uma chave da [CoinMarketCap Pro API](https://pro.coinmarketcap.com/account).
    A chave nunca é versionada: ela é lida de `local.properties` em tempo de build e exposta via
    `BuildConfig.CMC_API_KEY`, consumida só dentro dos módulos `di`/`data` — nunca logada.
-4. **`/v1/exchange/market-pairs/latest`** (usado só na tela de detalhe, pra listar as moedas) pode
-   retornar 403 (`error_code 1006`) num plano que não suporte o endpoint. `/v1/exchange/map` e
-   `/v1/exchange/info` (usados na listagem) funcionam numa chave Basic (gratuita). Se
-   `market-pairs/latest` falhar (403 por plano, timeout, etc.), a tela de detalhe degrada para
-   lista de moedas vazia em vez de falhar inteira.
+4. **`/v1/exchange/market-pairs/latest`** (usado só na tela de detalhe, pra listar as moedas) exige
+   um plano pago — confirmado com `curl` direto na API: numa chave Basic (gratuita) ele retorna
+   403 (`error_code 1006`, "Your API Key subscription plan doesn't support this endpoint"), mesmo
+   com `/v1/exchange/map` e `/v1/exchange/info` (usados na listagem) funcionando normalmente. Com
+   uma chave Basic, a tela de detalhe carrega normalmente mas a lista de moedas aparece vazia — é
+   uma limitação de plano da CoinMarketCap, não um bug do app (o mapeamento é coberto por teste
+   unitário com dados mockados). Se `market-pairs/latest` falhar (403 por plano, timeout, etc.), a
+   tela de detalhe degrada para lista de moedas vazia em vez de falhar inteira.
 
 ## Arquitetura
 
@@ -141,5 +144,11 @@ compatibilidade Espresso/AVD (`InputManager.getInstance`) alheio ao código; fic
 
 A listagem usa só `/v1/exchange/map` + `/v1/exchange/info` (que já traz `spot_volume_usd`, então
 não é preciso chamar `/v1/exchange/quotes/latest`). O detalhe soma `/v1/exchange/market-pairs/latest`
-para as moedas — se esse endpoint não for suportado pelo plano da chave (403, `error_code 1006`),
-a tela de detalhe degrada para lista de moedas vazia em vez de falhar inteira (ver seção Setup).
+para as moedas — esse endpoint exige plano pago (confirmado, 403/`error_code 1006` numa chave
+Basic); numa chave sem esse plano, a tela de detalhe degrada para lista de moedas vazia em vez de
+falhar inteira (ver seção Setup).
+
+O campo `description` de `/v1/exchange/info` vem em Markdown (headings `##`, links
+`[texto](url)`). Como o app não renderiza Markdown, `formatDescription` (em
+`presentation/common/Formatters.kt`) remove os marcadores de heading e troca `[texto](url)` por
+`texto` antes de exibir — só sanitização de texto, sem lib de Markdown.
