@@ -18,7 +18,10 @@ object OkHttpClientFactory {
             .apply {
                 if (config.enableLogging) {
                     addInterceptor(
-                        HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY },
+                        HttpLoggingInterceptor().apply {
+                            level = HttpLoggingInterceptor.Level.BODY
+                            redactHeader(config.apiKeyHeaderName)
+                        },
                     )
                 }
             }
