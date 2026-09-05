@@ -7,3 +7,6 @@ object ExchangeListRoute
 
 @Serializable
 data class ExchangeDetailRoute(val exchangeId: Int)
+
+@Serializable
+object AboutRoute

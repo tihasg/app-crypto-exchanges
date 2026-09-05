@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cryptoexchanges.core.ds.components.CryptoCard
 import com.cryptoexchanges.core.ds.components.CryptoLogo
@@ -29,6 +34,7 @@ import com.cryptoexchanges.core.ds.components.ErrorView
 import com.cryptoexchanges.core.ds.components.LoadingView
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 import com.cryptoexchanges.domain.model.Exchange
+import com.tihasg.crypto.exchanges.R
 import com.tihasg.crypto.exchanges.presentation.common.formatDate
 import com.tihasg.crypto.exchanges.presentation.common.formatUsd
 import com.tihasg.crypto.exchanges.presentation.common.toMessage
@@ -37,6 +43,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ExchangeListScreen(
     onNavigateToDetail: (Int) -> Unit,
+    onNavigateToAbout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExchangeListViewModel = koinViewModel(),
 ) {
@@ -53,6 +60,7 @@ fun ExchangeListScreen(
     ExchangeListContent(
         uiState = uiState,
         onIntent = viewModel::onIntent,
+        onAboutClick = onNavigateToAbout,
         modifier = modifier,
     )
 }
@@ -61,11 +69,24 @@ fun ExchangeListScreen(
 internal fun ExchangeListContent(
     uiState: ExchangeListUiState,
     onIntent: (ExchangeListIntent) -> Unit,
+    onAboutClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = { CryptoTopBar(title = "Exchanges") },
+        topBar = {
+            CryptoTopBar(
+                title = stringResource(R.string.exchange_list_title),
+                actions = {
+                    IconButton(onClick = onAboutClick) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = stringResource(R.string.exchange_list_about_content_description),
+                        )
+                    }
+                },
+            )
+        },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -78,7 +99,7 @@ internal fun ExchangeListContent(
                     message = uiState.error.toMessage(),
                     onRetry = { onIntent(ExchangeListIntent.OnRetry) },
                 )
-                uiState.exchanges.isEmpty() -> EmptyView(message = "Nenhuma exchange encontrada")
+                uiState.exchanges.isEmpty() -> EmptyView(message = stringResource(R.string.exchange_list_empty))
                 else -> ExchangeList(
                     exchanges = uiState.exchanges,
                     onExchangeClick = { onIntent(ExchangeListIntent.OnExchangeClick(it)) },

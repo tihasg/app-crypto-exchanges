@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">app-crypto-exchanges.git</string>
+
+    <string name="exchange_list_title">Exchanges</string>
+    <string name="exchange_list_empty">Nenhuma exchange encontrada</string>
+    <string name="exchange_list_about_content_description">Sobre mim</string>
+
+    <string name="exchange_detail_title_fallback">Detalhes</string>
+    <string name="exchange_detail_back_content_description">Voltar</string>
+    <string name="exchange_detail_empty">Nenhum detalhe disponível</string>
+    <string name="exchange_detail_currencies_title">Moedas negociadas</string>
+    <string name="exchange_detail_currencies_empty">Nenhuma moeda disponível para esta exchange.</string>
+    <string name="exchange_detail_id_format">ID: %1$d</string>
+    <string name="exchange_detail_maker_fee_label">maker_fee</string>
+    <string name="exchange_detail_taker_fee_label">taker_fee</string>
+    <string name="exchange_detail_date_launched_label">date_launched</string>
+
+    <string name="about_title">Sobre mim</string>
+    <string name="about_back_content_description">Voltar</string>
+    <string name="about_name">Tiago Rodrigues</string>
+    <string name="about_role">Desenvolvedor Android Sênior</string>
+    <string name="about_location">São Paulo, Brasil</string>
+    <string name="about_contact_section_title">Contato</string>
+    <string name="about_phone">(11) 94541-8403</string>
+    <string name="about_email">tiagolimarodrigues@hotmail.com</string>
+    <string name="about_linkedin">linkedin.com/in/tihasg</string>
+    <string name="about_github">github.com/tihasg</string>
+    <string name="about_summary_title">Resumo profissional</string>
+    <string name="about_summary_body">Desenvolvedor Android Sênior com mais de 11 anos de experiência entregando apps nativos de alta escala para fintech e varejo, Atuando em Apps com dezenas de milhões de usuários ativo. Especialista em Kotlin, Jetpack Compose e Clean Architecture, com foco em qualidade, segurança e performance.</string>
+    <string name="error_no_connectivity">Sem conexão com a internet. Verifique sua rede e tente novamente.</string>
+    <string name="error_timeout">A requisição demorou demais. Tente novamente.</string>
+    <string name="error_unauthorized">Chave de API inválida ou sem permissão para este recurso.</string>
+    <string name="error_not_found">Exchange não encontrada.</string>
+    <string name="error_server_format">Erro no servidor (código %1$d). Tente novamente mais tarde.</string>
+    <string name="error_parsing">Não foi possível processar a resposta do servidor.</string>
+    <string name="error_unknown_fallback">Ocorreu um erro inesperado.</string>
 </resources>

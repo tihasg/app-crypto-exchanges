@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cryptoexchanges.core.ds.components.CryptoLogo
@@ -34,6 +35,7 @@ import com.cryptoexchanges.core.ds.components.LoadingView
 import com.cryptoexchanges.core.ds.components.SectionTitle
 import com.cryptoexchanges.core.ds.theme.CryptoDimens
 import com.cryptoexchanges.domain.model.ExchangeDetail
+import com.tihasg.crypto.exchanges.R
 import com.tihasg.crypto.exchanges.presentation.common.formatDate
 import com.tihasg.crypto.exchanges.presentation.common.formatPercent
 import com.tihasg.crypto.exchanges.presentation.common.formatUsd
@@ -77,9 +79,9 @@ internal fun ExchangeDetailContent(
         modifier = modifier,
         topBar = {
             CryptoTopBar(
-                title = uiState.exchangeDetail?.name ?: "Detalhes",
+                title = uiState.exchangeDetail?.name ?: stringResource(R.string.exchange_detail_title_fallback),
                 onBackClick = { onIntent(ExchangeDetailIntent.OnBackClick) },
-                backContentDescription = "Voltar",
+                backContentDescription = stringResource(R.string.exchange_detail_back_content_description),
             )
         },
     ) { innerPadding ->
@@ -98,7 +100,7 @@ internal fun ExchangeDetailContent(
                     detail = uiState.exchangeDetail,
                     onWebsiteClick = { onIntent(ExchangeDetailIntent.OnWebsiteClick) },
                 )
-                else -> EmptyView(message = "Nenhum detalhe disponível")
+                else -> EmptyView(message = stringResource(R.string.exchange_detail_empty))
             }
         }
     }
@@ -119,12 +121,12 @@ private fun ExchangeDetailBody(
             ExchangeDetailHeader(detail = detail, onWebsiteClick = onWebsiteClick)
         }
         item {
-            SectionTitle(text = "Moedas negociadas")
+            SectionTitle(text = stringResource(R.string.exchange_detail_currencies_title))
         }
         if (detail.currencies.isEmpty()) {
             item {
                 Text(
-                    text = "Nenhuma moeda disponível para esta exchange.",
+                    text = stringResource(R.string.exchange_detail_currencies_empty),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -150,7 +152,7 @@ private fun ExchangeDetailHeader(
             Column {
                 Text(text = detail.name, style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    text = "ID: ${detail.id}",
+                    text = stringResource(R.string.exchange_detail_id_format, detail.id),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -176,8 +178,8 @@ private fun ExchangeDetailHeader(
         }
 
         Spacer(modifier = Modifier.height(CryptoDimens.spacingM))
-        LabelValueRow(label = "maker_fee", value = formatPercent(detail.makerFee))
-        LabelValueRow(label = "taker_fee", value = formatPercent(detail.takerFee))
-        LabelValueRow(label = "date_launched", value = formatDate(detail.dateLaunched))
+        LabelValueRow(label = stringResource(R.string.exchange_detail_maker_fee_label), value = formatPercent(detail.makerFee))
+        LabelValueRow(label = stringResource(R.string.exchange_detail_taker_fee_label), value = formatPercent(detail.takerFee))
+        LabelValueRow(label = stringResource(R.string.exchange_detail_date_launched_label), value = formatDate(detail.dateLaunched))
     }
 }
