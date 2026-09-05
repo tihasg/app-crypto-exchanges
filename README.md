@@ -1,5 +1,7 @@
 # app-crypto-exchanges
 
+[![CI](https://github.com/tihasg/app-crypto-exchanges/actions/workflows/ci.yml/badge.svg)](https://github.com/tihasg/app-crypto-exchanges/actions/workflows/ci.yml)
+
 Aplicativo Android que consulta a API da [CoinMarketCap](https://coinmarketcap.com/api/documentation/v1/)
 e exibe uma lista de exchanges de criptomoedas e, ao tocar em uma delas, seus detalhes junto das
 moedas negociadas. Construído com Kotlin, Jetpack Compose, MVI e Clean Architecture, separada em
@@ -117,6 +119,14 @@ Cada tela tem `UiState` (data class imutável), `Intent` (sealed interface de a�
 | `data`   | Mappers DTO→domínio, mapeamento `NetworkError`→`DomainError`, `ExchangeRemoteDataSource`, composição de chamadas em `ExchangeRepositoryImpl` (sucesso, cada chamada falhando isoladamente, degradação de moedas). |
 | `app` (unit) | `ExchangeListViewModel`/`ExchangeDetailViewModel` — estado de loading inicial, sucesso, erro, retry e efeitos one-shot (navegação, abrir URL), via `StandardTestDispatcher` + `MockK` + Turbine (só para o canal de efeitos, que não sofre do problema de conflação do `StateFlow`). |
 | `app` (androidTest) | Compose UI Test para lista (renderiza item, clique dispara intent de navegação, estado de erro + retry) e detalhe (renderiza campos, estado de erro + retry). |
+
+## CI
+
+O workflow em `.github/workflows/ci.yml` roda em todo push/PR pra `master`: compila o APK debug,
+roda os testes unitários de todos os módulos e o Android Lint. Os testes de UI (`connectedCheck`)
+não entram na pipeline — dependem de emulador e, num teste local, falharam por um problema de
+compatibilidade Espresso/AVD (`InputManager.getInstance`) alheio ao código; ficam como passo manual
+(seção Rodando acima) até rodar de forma estável num executor com emulador.
 
 ## Endpoints
 
