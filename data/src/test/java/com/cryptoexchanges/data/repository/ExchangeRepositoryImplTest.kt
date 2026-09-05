@@ -6,8 +6,6 @@ import com.cryptoexchanges.data.remote.ExchangeRemoteDataSource
 import com.cryptoexchanges.data.remote.dto.ExchangeInfoDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMapDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMarketPairsDto
-import com.cryptoexchanges.data.remote.dto.ExchangeQuoteDto
-import com.cryptoexchanges.data.remote.dto.ExchangeQuoteUsdDto
 import com.cryptoexchanges.domain.model.DomainError
 import com.cryptoexchanges.domain.model.DomainResult
 import io.mockk.coEvery
@@ -22,14 +20,11 @@ class ExchangeRepositoryImplTest {
     private val repository = ExchangeRepositoryImpl(remoteDataSource)
 
     @Test
-    fun `getExchanges combines map, info and quotes into exchanges`() = runTest {
+    fun `getExchanges combines map and info into exchanges`() = runTest {
         val map = listOf(ExchangeMapDto(id = 270, name = "Binance"))
         coEvery { remoteDataSource.getExchangeMap() } returns NetworkResult.Success(map)
         coEvery { remoteDataSource.getExchangeInfo(listOf(270)) } returns NetworkResult.Success(
-            mapOf("270" to ExchangeInfoDto(id = 270, name = "Binance", logo = "logo.png")),
-        )
-        coEvery { remoteDataSource.getExchangeQuotes(listOf(270)) } returns NetworkResult.Success(
-            mapOf("270" to ExchangeQuoteDto(id = 270, name = "Binance", quote = mapOf("USD" to ExchangeQuoteUsdDto(spotVolumeUsd = 100.0)))),
+            mapOf("270" to ExchangeInfoDto(id = 270, name = "Binance", logo = "logo.png", spotVolumeUsd = 100.0)),
         )
 
         val result = repository.getExchanges()
@@ -72,7 +67,6 @@ class ExchangeRepositoryImplTest {
             listOf(ExchangeMapDto(id = 270, name = "Binance")),
         )
         coEvery { remoteDataSource.getExchangeInfo(listOf(270)) } returns NetworkResult.Error(NetworkError.Http(500, null))
-        coEvery { remoteDataSource.getExchangeQuotes(listOf(270)) } returns NetworkResult.Success(emptyMap())
 
         val result = repository.getExchanges()
 

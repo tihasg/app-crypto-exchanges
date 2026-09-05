@@ -3,18 +3,17 @@ package com.cryptoexchanges.data.mapper
 import com.cryptoexchanges.data.remote.dto.ExchangeInfoDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMapDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMarketPairsDto
-import com.cryptoexchanges.data.remote.dto.ExchangeQuoteDto
 import com.cryptoexchanges.data.remote.dto.MarketPairDto
 import com.cryptoexchanges.domain.model.Currency
 import com.cryptoexchanges.domain.model.Exchange
 import com.cryptoexchanges.domain.model.ExchangeDetail
 
-fun toExchange(map: ExchangeMapDto, info: ExchangeInfoDto?, quote: ExchangeQuoteDto?): Exchange {
+fun toExchange(map: ExchangeMapDto, info: ExchangeInfoDto?): Exchange {
     return Exchange(
         id = map.id,
         name = map.name,
         logoUrl = info?.logo,
-        spotVolumeUsd = quote?.quote?.get("USD")?.spotVolumeUsd,
+        spotVolumeUsd = info?.spotVolumeUsd,
         dateLaunched = info?.dateLaunched,
     )
 }

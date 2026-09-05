@@ -6,7 +6,6 @@ import com.cryptoexchanges.data.remote.dto.CmcResponseDto
 import com.cryptoexchanges.data.remote.dto.ExchangeInfoDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMapDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMarketPairsDto
-import com.cryptoexchanges.data.remote.dto.ExchangeQuoteDto
 
 class ExchangeRemoteDataSource(private val api: ExchangeApiService) {
 
@@ -15,9 +14,6 @@ class ExchangeRemoteDataSource(private val api: ExchangeApiService) {
 
     suspend fun getExchangeInfo(ids: List<Int>): NetworkResult<Map<String, ExchangeInfoDto>> =
         safeApiCall { api.getExchangeInfo(ids.joinToString(",")).dataOrThrow() }
-
-    suspend fun getExchangeQuotes(ids: List<Int>): NetworkResult<Map<String, ExchangeQuoteDto>> =
-        safeApiCall { api.getExchangeQuotes(ids.joinToString(",")).dataOrThrow() }
 
     suspend fun getExchangeMarketPairs(id: Int): NetworkResult<ExchangeMarketPairsDto> =
         safeApiCall { api.getExchangeMarketPairs(id).dataOrThrow() }

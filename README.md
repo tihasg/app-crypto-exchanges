@@ -12,15 +12,11 @@ módulos Gradle.
 3. Preencha `CMC_API_KEY` com uma chave da [CoinMarketCap Pro API](https://pro.coinmarketcap.com/account).
    A chave nunca é versionada: ela é lida de `local.properties` em tempo de build e exposta via
    `BuildConfig.CMC_API_KEY`, consumida só dentro dos módulos `di`/`data` — nunca logada.
-4. **Endpoints de exchange da CoinMarketCap exigem um plano pago.** Uma chave gratuita (Basic)
-   não consegue chamar `/v1/exchange/*`. Por isso:
-   - Se `CMC_API_KEY` estiver **vazia**, o app usa `FakeExchangeRepository` (dados fixos de
-     6 exchanges reais — Binance, Coinbase, Kraken, Bitfinex, KuCoin, OKX — com logos reais da
-     CDN pública da CMC) para a tela funcionar de ponta a ponta sem chave nenhuma.
-   - Se `CMC_API_KEY` estiver **preenchida**, o app usa `ExchangeRepositoryImpl`, que bate nos
-     endpoints reais via Retrofit. Com uma chave gratuita isso deve retornar erro 401/403
-     (mapeado para `DomainError.Unauthorized`) — o caminho de erro + retry cobre esse caso.
-   - A troca acontece em `di/DataModule.kt`.
+4. **`/v1/exchange/market-pairs/latest`** (usado só na tela de detalhe, pra listar as moedas) pode
+   retornar 403 (`error_code 1006`) num plano que não suporte o endpoint. `/v1/exchange/map` e
+   `/v1/exchange/info` (usados na listagem) funcionam numa chave Basic (gratuita). Se
+   `market-pairs/latest` falhar (403 por plano, timeout, etc.), a tela de detalhe degrada para
+   lista de moedas vazia em vez de falhar inteira.
 
 ## Arquitetura
 
@@ -40,8 +36,8 @@ Gradle independentes:
                     │     data       │──────▶│    domain      │
                     │ DTOs, mappers, │  uses │ entities,      │
                     │ RemoteDataSrc, │ repo  │ DomainError,   │
-                    │ *RepositoryImpl│ contr.│ use cases,     │
-                    │ FakeRepository │       │ repo contracts │
+                    │ RepositoryImpl │ contr.│ use cases,     │
+                    │                │       │ repo contracts │
                     └───────┬────────┘       └───────────────┘
                             │ uses                    ▲
                             ▼                          │ (no dependency)
@@ -63,7 +59,7 @@ Gradle independentes:
   Koin ou qualquer framework.
 - **`data`** — Kotlin/JVM puro. DTOs `@Serializable`, mappers DTO→domain, `ExchangeApiService`
   (Retrofit), `ExchangeRemoteDataSource` (usa `safeApiCall` do `core-network`), `ExchangeRepositoryImpl`
-  (traduz `NetworkError` → `DomainError` tipado) e `FakeExchangeRepository`.
+  (traduz `NetworkError` → `DomainError` tipado).
 - **`core-network`** — Kotlin/JVM puro, reutilizável fora deste app. Factories de `OkHttpClient`/
   `Retrofit` (kotlinx.serialization), `ApiKeyInterceptor`, e `NetworkResult`/`safeApiCall` para
   garantir que nenhuma exceção de rede/parsing escape sem ser tratada.
@@ -90,9 +86,6 @@ Cada tela tem `UiState` (data class imutável), `Intent` (sealed interface de a�
   Compose 2.8+, então reaproveitar para os DTOs evita uma segunda lib de JSON.
 - **`data`/`domain`/`core-network` são módulos Kotlin/JVM puros**, não Android library. Mais rápido
   para compilar/testar e força a ausência de vazamento de `Context`/Android nessas camadas.
-- **Fake repository em vez de mockar o Retrofit.** Como os endpoints de exchange são pagos, uma
-  implementação completa só de mock (Retrofit real nunca testável em avaliação) pareceu menos
-  honesta que ter as duas implementações reais lado a lado, trocadas por uma condição simples.
 - **`getExchangeDetail` degrada graciosamente**: se `market-pairs/latest` falhar mas `exchange/info`
   funcionar, a tela mostra os detalhes da exchange com a lista de moedas vazia, em vez de falhar a
   tela inteira — a lista de moedas é tratada como informação suplementar.
@@ -121,15 +114,13 @@ Cada tela tem `UiState` (data class imutável), `Intent` (sealed interface de a�
 |----------|-----------------------------------------------------------------------------------|
 | `core-network` | `ApiKeyInterceptor` (MockWebServer) e `safeApiCall` (mapeamento de cada tipo de exceção → `NetworkResult`). |
 | `domain` | `GetExchangesUseCase` (ordenação por volume, nulls por último, propagação de erro) e `GetExchangeDetailUseCase`. |
-| `data`   | Mappers DTO→domínio, mapeamento `NetworkError`→`DomainError`, `ExchangeRemoteDataSource`, composição de chamadas em `ExchangeRepositoryImpl` (sucesso, cada chamada falhando isoladamente, degradação de moedas) e `FakeExchangeRepository`. |
+| `data`   | Mappers DTO→domínio, mapeamento `NetworkError`→`DomainError`, `ExchangeRemoteDataSource`, composição de chamadas em `ExchangeRepositoryImpl` (sucesso, cada chamada falhando isoladamente, degradação de moedas). |
 | `app` (unit) | `ExchangeListViewModel`/`ExchangeDetailViewModel` — estado de loading inicial, sucesso, erro, retry e efeitos one-shot (navegação, abrir URL), via `StandardTestDispatcher` + `MockK` + Turbine (só para o canal de efeitos, que não sofre do problema de conflação do `StateFlow`). |
 | `app` (androidTest) | Compose UI Test para lista (renderiza item, clique dispara intent de navegação, estado de erro + retry) e detalhe (renderiza campos, estado de erro + retry). |
 
-## Endpoints premium mockados
+## Endpoints
 
-Os quatro endpoints de exchange (`/v1/exchange/map`, `/v1/exchange/info`,
-`/v1/exchange/quotes/latest`, `/v1/exchange/market-pairs/latest`) exigem um plano pago da
-CoinMarketCap. A implementação real (`ExchangeRepositoryImpl`) existe e é testada normalmente
-(com o `RemoteDataSource` mockado via MockK), mas para a avaliação funcionar sem uma chave paga,
-`FakeExchangeRepository` fica ativo por padrão sempre que `CMC_API_KEY` está vazia — ver a seção
-Setup acima.
+A listagem usa só `/v1/exchange/map` + `/v1/exchange/info` (que já traz `spot_volume_usd`, então
+não é preciso chamar `/v1/exchange/quotes/latest`). O detalhe soma `/v1/exchange/market-pairs/latest`
+para as moedas — se esse endpoint não for suportado pelo plano da chave (403, `error_code 1006`),
+a tela de detalhe degrada para lista de moedas vazia em vez de falhar inteira (ver seção Setup).

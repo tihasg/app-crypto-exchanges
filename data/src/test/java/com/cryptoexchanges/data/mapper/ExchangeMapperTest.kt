@@ -3,8 +3,6 @@ package com.cryptoexchanges.data.mapper
 import com.cryptoexchanges.data.remote.dto.ExchangeInfoDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMapDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMarketPairsDto
-import com.cryptoexchanges.data.remote.dto.ExchangeQuoteDto
-import com.cryptoexchanges.data.remote.dto.ExchangeQuoteUsdDto
 import com.cryptoexchanges.data.remote.dto.ExchangeUrlsDto
 import com.cryptoexchanges.data.remote.dto.MarketPairAssetDto
 import com.cryptoexchanges.data.remote.dto.MarketPairDto
@@ -17,21 +15,17 @@ import org.junit.Test
 class ExchangeMapperTest {
 
     @Test
-    fun `maps map, info and quote dtos into an exchange`() {
+    fun `maps map and info dtos into an exchange`() {
         val map = ExchangeMapDto(id = 270, name = "Binance", slug = "binance")
         val info = ExchangeInfoDto(
             id = 270,
             name = "Binance",
             logo = "https://logo/270.png",
             dateLaunched = "2017-07-14T00:00:00.000Z",
-        )
-        val quote = ExchangeQuoteDto(
-            id = 270,
-            name = "Binance",
-            quote = mapOf("USD" to ExchangeQuoteUsdDto(spotVolumeUsd = 12_450_000_000.0)),
+            spotVolumeUsd = 12_450_000_000.0,
         )
 
-        val exchange = toExchange(map, info, quote)
+        val exchange = toExchange(map, info)
 
         assertEquals(270, exchange.id)
         assertEquals("Binance", exchange.name)
@@ -41,10 +35,10 @@ class ExchangeMapperTest {
     }
 
     @Test
-    fun `maps exchange with missing info and quote to nulls`() {
+    fun `maps exchange with missing info to nulls`() {
         val map = ExchangeMapDto(id = 1, name = "Unknown")
 
-        val exchange = toExchange(map, info = null, quote = null)
+        val exchange = toExchange(map, info = null)
 
         assertNull(exchange.logoUrl)
         assertNull(exchange.spotVolumeUsd)

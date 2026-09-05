@@ -12,6 +12,7 @@ data class ExchangeInfoDto(
     @SerialName("date_launched") val dateLaunched: String? = null,
     @SerialName("maker_fee") val makerFee: Double? = null,
     @SerialName("taker_fee") val takerFee: Double? = null,
+    @SerialName("spot_volume_usd") val spotVolumeUsd: Double? = null,
     val urls: ExchangeUrlsDto? = null,
 )
 

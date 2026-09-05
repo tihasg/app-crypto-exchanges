@@ -26,23 +26,14 @@ class ExchangeRepositoryImpl(
         if (exchangeMaps.isEmpty()) return@coroutineScope DomainResult.Success(emptyList())
 
         val ids = exchangeMaps.map { it.id }
-        val infoDeferred = async { remoteDataSource.getExchangeInfo(ids) }
-        val quotesDeferred = async { remoteDataSource.getExchangeQuotes(ids) }
-
-        val infoResult = infoDeferred.await()
+        val infoResult = remoteDataSource.getExchangeInfo(ids)
         val infoById = when (infoResult) {
             is NetworkResult.Error -> return@coroutineScope DomainResult.Error(infoResult.error.toDomainError())
             is NetworkResult.Success -> infoResult.data
         }
 
-        val quotesResult = quotesDeferred.await()
-        val quotesById = when (quotesResult) {
-            is NetworkResult.Error -> return@coroutineScope DomainResult.Error(quotesResult.error.toDomainError())
-            is NetworkResult.Success -> quotesResult.data
-        }
-
         val exchanges = exchangeMaps.map { map ->
-            toExchange(map, infoById[map.id.toString()], quotesById[map.id.toString()])
+            toExchange(map, infoById[map.id.toString()])
         }
         DomainResult.Success(exchanges)
     }
