@@ -80,7 +80,8 @@ internal fun ExchangeDetailContent(
         modifier = modifier,
         topBar = {
             CryptoTopBar(
-                title = uiState.exchangeDetail?.name ?: stringResource(R.string.exchange_detail_title_fallback),
+                title = uiState.exchangeDetail?.name
+                    ?: stringResource(R.string.exchange_detail_title_fallback),
                 onBackClick = { onIntent(ExchangeDetailIntent.OnBackClick) },
                 backContentDescription = stringResource(R.string.exchange_detail_back_content_description),
             )
@@ -97,10 +98,12 @@ internal fun ExchangeDetailContent(
                     message = uiState.error.toMessage(),
                     onRetry = { onIntent(ExchangeDetailIntent.OnRetry) },
                 )
+
                 uiState.exchangeDetail != null -> ExchangeDetailBody(
                     detail = uiState.exchangeDetail,
                     onWebsiteClick = { onIntent(ExchangeDetailIntent.OnWebsiteClick) },
                 )
+
                 else -> EmptyView(message = stringResource(R.string.exchange_detail_empty))
             }
         }
@@ -148,7 +151,11 @@ private fun ExchangeDetailHeader(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            CryptoLogo(url = detail.logoUrl, contentDescription = detail.name, size = CryptoDimens.logoL)
+            CryptoLogo(
+                url = detail.logoUrl,
+                contentDescription = detail.name,
+                size = CryptoDimens.logoL
+            )
             Spacer(modifier = Modifier.width(CryptoDimens.spacingM))
             Column {
                 Text(text = detail.name, style = MaterialTheme.typography.headlineSmall)
@@ -179,8 +186,17 @@ private fun ExchangeDetailHeader(
         }
 
         Spacer(modifier = Modifier.height(CryptoDimens.spacingM))
-        LabelValueRow(label = stringResource(R.string.exchange_detail_maker_fee_label), value = formatPercent(detail.makerFee))
-        LabelValueRow(label = stringResource(R.string.exchange_detail_taker_fee_label), value = formatPercent(detail.takerFee))
-        LabelValueRow(label = stringResource(R.string.exchange_detail_date_launched_label), value = formatDate(detail.dateLaunched))
+        LabelValueRow(
+            label = stringResource(R.string.exchange_detail_maker_fee_label),
+            value = formatPercent(detail.makerFee)
+        )
+        LabelValueRow(
+            label = stringResource(R.string.exchange_detail_taker_fee_label),
+            value = formatPercent(detail.takerFee)
+        )
+        LabelValueRow(
+            label = stringResource(R.string.exchange_detail_date_launched_label),
+            value = formatDate(detail.dateLaunched)
+        )
     }
 }

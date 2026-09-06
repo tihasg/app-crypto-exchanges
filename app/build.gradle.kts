@@ -75,6 +75,9 @@ dependencies {
 
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.workmanager)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.datastore.preferences.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

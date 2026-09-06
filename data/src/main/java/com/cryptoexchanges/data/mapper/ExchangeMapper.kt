@@ -1,5 +1,6 @@
 package com.cryptoexchanges.data.mapper
 
+import com.cryptoexchanges.data.local.ExchangeCacheDto
 import com.cryptoexchanges.data.remote.dto.ExchangeInfoDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMapDto
 import com.cryptoexchanges.data.remote.dto.ExchangeMarketPairsDto
@@ -18,6 +19,22 @@ fun toExchange(map: ExchangeMapDto, info: ExchangeInfoDto?): Exchange {
     )
 }
 
+fun Exchange.toCacheDto(): ExchangeCacheDto = ExchangeCacheDto(
+    id = id,
+    name = name,
+    logoUrl = logoUrl,
+    spotVolumeUsd = spotVolumeUsd,
+    dateLaunched = dateLaunched,
+)
+
+fun ExchangeCacheDto.toDomain(): Exchange = Exchange(
+    id = id,
+    name = name,
+    logoUrl = logoUrl,
+    spotVolumeUsd = spotVolumeUsd,
+    dateLaunched = dateLaunched,
+)
+
 fun toExchangeDetail(info: ExchangeInfoDto, marketPairs: ExchangeMarketPairsDto?): ExchangeDetail {
     return ExchangeDetail(
         id = info.id,
@@ -28,7 +45,8 @@ fun toExchangeDetail(info: ExchangeInfoDto, marketPairs: ExchangeMarketPairsDto?
         makerFee = info.makerFee,
         takerFee = info.takerFee,
         dateLaunched = info.dateLaunched,
-        currencies = marketPairs?.marketPairs.orEmpty().mapNotNull { it.toCurrency() }.distinctBy { it.name },
+        currencies = marketPairs?.marketPairs.orEmpty().mapNotNull { it.toCurrency() }
+            .distinctBy { it.name },
     )
 }
 

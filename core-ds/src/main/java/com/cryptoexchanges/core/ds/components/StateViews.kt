@@ -38,7 +38,9 @@ fun EmptyView(
     icon: ImageVector = Icons.Filled.Info,
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(CryptoDimens.spacingL),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(CryptoDimens.spacingL),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -65,7 +67,9 @@ fun ErrorView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(CryptoDimens.spacingL),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(CryptoDimens.spacingL),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

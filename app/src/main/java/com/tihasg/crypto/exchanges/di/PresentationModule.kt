@@ -6,6 +6,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val presentationModule = module {
-    viewModel { ExchangeListViewModel(get()) }
+    viewModel { ExchangeListViewModel(get(), get()) }
     viewModel { (exchangeId: Int) -> ExchangeDetailViewModel(exchangeId, get()) }
 }

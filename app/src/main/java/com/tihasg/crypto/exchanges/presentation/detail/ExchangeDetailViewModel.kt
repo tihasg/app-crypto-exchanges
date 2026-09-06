@@ -36,6 +36,7 @@ class ExchangeDetailViewModel(
                     viewModelScope.launch { _effect.send(ExchangeDetailEffect.OpenUrl(url)) }
                 }
             }
+
             ExchangeDetailIntent.OnBackClick -> viewModelScope.launch {
                 _effect.send(ExchangeDetailEffect.NavigateBack)
             }
@@ -49,6 +50,7 @@ class ExchangeDetailViewModel(
                 is DomainResult.Success -> _uiState.update {
                     it.copy(isLoading = false, exchangeDetail = result.data, error = null)
                 }
+
                 is DomainResult.Error -> _uiState.update {
                     it.copy(isLoading = false, error = result.error)
                 }

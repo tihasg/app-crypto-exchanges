@@ -17,10 +17,34 @@ class GetExchangesUseCaseTest {
 
     @Test
     fun `sorts exchanges by spot volume descending`() = runTest {
-        val binance = Exchange(id = 1, name = "Binance", logoUrl = null, spotVolumeUsd = 100.0, dateLaunched = null)
-        val coinbase = Exchange(id = 2, name = "Coinbase", logoUrl = null, spotVolumeUsd = 500.0, dateLaunched = null)
-        val kraken = Exchange(id = 3, name = "Kraken", logoUrl = null, spotVolumeUsd = 200.0, dateLaunched = null)
-        coEvery { repository.getExchanges() } returns DomainResult.Success(listOf(binance, coinbase, kraken))
+        val binance = Exchange(
+            id = 1,
+            name = "Binance",
+            logoUrl = null,
+            spotVolumeUsd = 100.0,
+            dateLaunched = null
+        )
+        val coinbase = Exchange(
+            id = 2,
+            name = "Coinbase",
+            logoUrl = null,
+            spotVolumeUsd = 500.0,
+            dateLaunched = null
+        )
+        val kraken = Exchange(
+            id = 3,
+            name = "Kraken",
+            logoUrl = null,
+            spotVolumeUsd = 200.0,
+            dateLaunched = null
+        )
+        coEvery { repository.getExchanges() } returns DomainResult.Success(
+            listOf(
+                binance,
+                coinbase,
+                kraken
+            )
+        )
 
         val result = useCase()
 
@@ -29,8 +53,20 @@ class GetExchangesUseCaseTest {
 
     @Test
     fun `sorts exchanges with unknown volume last`() = runTest {
-        val known = Exchange(id = 1, name = "Binance", logoUrl = null, spotVolumeUsd = 100.0, dateLaunched = null)
-        val unknown = Exchange(id = 2, name = "Unknown", logoUrl = null, spotVolumeUsd = null, dateLaunched = null)
+        val known = Exchange(
+            id = 1,
+            name = "Binance",
+            logoUrl = null,
+            spotVolumeUsd = 100.0,
+            dateLaunched = null
+        )
+        val unknown = Exchange(
+            id = 2,
+            name = "Unknown",
+            logoUrl = null,
+            spotVolumeUsd = null,
+            dateLaunched = null
+        )
         coEvery { repository.getExchanges() } returns DomainResult.Success(listOf(unknown, known))
 
         val result = useCase()

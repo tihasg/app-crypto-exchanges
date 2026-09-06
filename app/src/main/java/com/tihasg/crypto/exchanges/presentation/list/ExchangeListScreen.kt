@@ -1,7 +1,6 @@
 package com.tihasg.crypto.exchanges.presentation.list
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cryptoexchanges.core.ds.components.CryptoCard
 import com.cryptoexchanges.core.ds.components.CryptoLogo
+import com.cryptoexchanges.core.ds.components.CryptoSearchField
 import com.cryptoexchanges.core.ds.components.CryptoTopBar
 import com.cryptoexchanges.core.ds.components.EmptyView
 import com.cryptoexchanges.core.ds.components.ErrorView
@@ -88,22 +88,48 @@ internal fun ExchangeListContent(
             )
         },
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
         ) {
             when {
-                uiState.isLoading -> LoadingView()
-                uiState.error != null -> ErrorView(
+                uiState.isLoading -> LoadingView(modifier = Modifier.weight(1f))
+                uiState.error != null && uiState.exchanges.isEmpty() -> ErrorView(
                     message = uiState.error.toMessage(),
                     onRetry = { onIntent(ExchangeListIntent.OnRetry) },
+                    modifier = Modifier.weight(1f),
                 )
-                uiState.exchanges.isEmpty() -> EmptyView(message = stringResource(R.string.exchange_list_empty))
-                else -> ExchangeList(
-                    exchanges = uiState.exchanges,
-                    onExchangeClick = { onIntent(ExchangeListIntent.OnExchangeClick(it)) },
-                )
+
+                else -> {
+                    CryptoSearchField(
+                        query = uiState.searchQuery,
+                        onQueryChange = { onIntent(ExchangeListIntent.OnSearchQueryChange(it)) },
+                        placeholder = stringResource(R.string.exchange_list_search_placeholder),
+                        clearContentDescription = stringResource(R.string.exchange_list_search_clear_content_description),
+                        modifier = Modifier.padding(CryptoDimens.spacingM),
+                    )
+                    when {
+                        uiState.exchanges.isEmpty() && uiState.searchQuery.isNotBlank() -> EmptyView(
+                            message = stringResource(
+                                R.string.exchange_list_search_empty,
+                                uiState.searchQuery
+                            ),
+                            modifier = Modifier.weight(1f),
+                        )
+
+                        uiState.exchanges.isEmpty() -> EmptyView(
+                            message = stringResource(R.string.exchange_list_empty),
+                            modifier = Modifier.weight(1f),
+                        )
+
+                        else -> ExchangeList(
+                            exchanges = uiState.exchanges,
+                            onExchangeClick = { onIntent(ExchangeListIntent.OnExchangeClick(it)) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
             }
         }
     }

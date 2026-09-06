@@ -38,19 +38,24 @@ class ExchangeDetailViewModelTest {
     )
 
     @Test
-    fun `starts in loading state and loads detail on init`() = runTest(mainDispatcherRule.testDispatcher) {
-        coEvery { getExchangeDetailUseCase(270) } returns DomainResult.Success(sampleDetail)
+    fun `starts in loading state and loads detail on init`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            coEvery { getExchangeDetailUseCase(270) } returns DomainResult.Success(sampleDetail)
 
-        val viewModel = ExchangeDetailViewModel(270, getExchangeDetailUseCase)
-        assertTrue(viewModel.uiState.value.isLoading)
+            val viewModel = ExchangeDetailViewModel(270, getExchangeDetailUseCase)
+            assertTrue(viewModel.uiState.value.isLoading)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        assertEquals(
-            ExchangeDetailUiState(isLoading = false, exchangeDetail = sampleDetail, error = null),
-            viewModel.uiState.value,
-        )
-    }
+            assertEquals(
+                ExchangeDetailUiState(
+                    isLoading = false,
+                    exchangeDetail = sampleDetail,
+                    error = null
+                ),
+                viewModel.uiState.value,
+            )
+        }
 
     @Test
     fun `shows error when use case fails`() = runTest(mainDispatcherRule.testDispatcher) {
