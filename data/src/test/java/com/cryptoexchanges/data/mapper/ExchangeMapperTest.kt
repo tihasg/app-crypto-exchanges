@@ -116,4 +116,30 @@ class ExchangeMapperTest {
 
         assertEquals(emptyList<Currency>(), detail.currencies)
     }
+
+    @Test
+    fun `rejects non-https website urls to prevent arbitrary intent launches`() {
+        val info = ExchangeInfoDto(
+            id = 270,
+            name = "Binance",
+            urls = ExchangeUrlsDto(website = listOf("javascript:alert(1)")),
+        )
+
+        val detail = toExchangeDetail(info, marketPairs = null)
+
+        assertNull(detail.websiteUrl)
+    }
+
+    @Test
+    fun `falls back to the next website url when the first one is unsafe`() {
+        val info = ExchangeInfoDto(
+            id = 270,
+            name = "Binance",
+            urls = ExchangeUrlsDto(website = listOf("http://binance.com", "https://binance.com")),
+        )
+
+        val detail = toExchangeDetail(info, marketPairs = null)
+
+        assertEquals("https://binance.com", detail.websiteUrl)
+    }
 }

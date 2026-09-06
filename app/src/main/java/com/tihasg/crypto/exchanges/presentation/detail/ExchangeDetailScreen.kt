@@ -1,5 +1,6 @@
 package com.tihasg.crypto.exchanges.presentation.detail
 
+import android.content.ActivityNotFoundException
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,7 +58,12 @@ fun ExchangeDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is ExchangeDetailEffect.OpenUrl -> uriHandler.openUri(effect.url)
+                is ExchangeDetailEffect.OpenUrl -> {
+                    try {
+                        uriHandler.openUri(effect.url)
+                    } catch (_: ActivityNotFoundException) {
+                    }
+                }
                 ExchangeDetailEffect.NavigateBack -> onNavigateBack()
             }
         }
