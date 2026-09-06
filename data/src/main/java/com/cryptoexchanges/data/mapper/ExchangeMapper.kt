@@ -8,6 +8,7 @@ import com.cryptoexchanges.data.remote.dto.MarketPairDto
 import com.cryptoexchanges.domain.model.Currency
 import com.cryptoexchanges.domain.model.Exchange
 import com.cryptoexchanges.domain.model.ExchangeDetail
+import java.net.URI
 
 fun toExchange(map: ExchangeMapDto, info: ExchangeInfoDto?): Exchange {
     return Exchange(
@@ -41,13 +42,18 @@ fun toExchangeDetail(info: ExchangeInfoDto, marketPairs: ExchangeMarketPairsDto?
         name = info.name,
         logoUrl = info.logo,
         description = info.description,
-        websiteUrl = info.urls?.website?.firstOrNull(),
+        websiteUrl = info.urls?.website?.firstOrNull { it.isSafeHttpsUrl() },
         makerFee = info.makerFee,
         takerFee = info.takerFee,
         dateLaunched = info.dateLaunched,
         currencies = marketPairs?.marketPairs.orEmpty().mapNotNull { it.toCurrency() }
             .distinctBy { it.name },
     )
+}
+
+private fun String.isSafeHttpsUrl(): Boolean {
+    val uri = runCatching { URI(this) }.getOrNull() ?: return false
+    return uri.scheme.equals("https", ignoreCase = true) && !uri.host.isNullOrBlank()
 }
 
 private fun MarketPairDto.toCurrency(): Currency? {
