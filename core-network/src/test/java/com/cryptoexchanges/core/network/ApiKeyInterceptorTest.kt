@@ -27,7 +27,12 @@ class ApiKeyInterceptorTest {
     fun `adds api key header to every request`() {
         server.enqueue(MockResponse().setBody("{}"))
         val client = OkHttpClient.Builder()
-            .addInterceptor(ApiKeyInterceptor(headerName = "X-CMC_PRO_API_KEY", apiKey = "test-key"))
+            .addInterceptor(
+                ApiKeyInterceptor(
+                    headerName = "X-CMC_PRO_API_KEY",
+                    apiKey = "test-key"
+                )
+            )
             .build()
 
         client.newCall(Request.Builder().url(server.url("/v1/exchange/map")).build()).execute()

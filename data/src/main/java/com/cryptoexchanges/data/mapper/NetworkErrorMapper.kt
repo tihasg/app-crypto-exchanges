@@ -12,5 +12,6 @@ internal fun NetworkError.toDomainError(): DomainError = when (this) {
         404 -> DomainError.NotFound
         else -> DomainError.ServerError(code)
     }
+
     is NetworkError.Unknown -> DomainError.Unknown(message)
 }

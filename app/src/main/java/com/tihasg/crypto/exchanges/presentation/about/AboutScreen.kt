@@ -49,7 +49,10 @@ fun AboutScreen(
         ) {
             item {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(R.string.about_name), style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        text = stringResource(R.string.about_name),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
                     Text(
                         text = stringResource(R.string.about_role),
                         style = MaterialTheme.typography.titleMedium,

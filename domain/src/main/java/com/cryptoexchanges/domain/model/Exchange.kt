@@ -7,3 +7,6 @@ data class Exchange(
     val spotVolumeUsd: Double?,
     val dateLaunched: String?,
 )
+
+fun List<Exchange>.sortedByVolumeDescending(): List<Exchange> =
+    sortedByDescending { it.spotVolumeUsd ?: Double.NEGATIVE_INFINITY }

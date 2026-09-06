@@ -34,7 +34,10 @@ class ExchangeDetailScreenTest {
         composeTestRule.setContent {
             CryptoExchangesTheme {
                 ExchangeDetailContent(
-                    uiState = ExchangeDetailUiState(isLoading = false, exchangeDetail = sampleDetail),
+                    uiState = ExchangeDetailUiState(
+                        isLoading = false,
+                        exchangeDetail = sampleDetail
+                    ),
                     onIntent = {},
                 )
             }
@@ -53,7 +56,10 @@ class ExchangeDetailScreenTest {
         composeTestRule.setContent {
             CryptoExchangesTheme {
                 ExchangeDetailContent(
-                    uiState = ExchangeDetailUiState(isLoading = false, error = DomainError.NotFound),
+                    uiState = ExchangeDetailUiState(
+                        isLoading = false,
+                        error = DomainError.NotFound
+                    ),
                     onIntent = { if (it == ExchangeDetailIntent.OnRetry) retried = true },
                 )
             }

@@ -27,7 +27,13 @@ fun CryptoCard(
     val elevation = CardDefaults.cardElevation(defaultElevation = CryptoDimens.elevationS)
 
     if (onClick != null) {
-        Card(onClick = onClick, modifier = modifier, shape = shape, colors = colors, elevation = elevation) {
+        Card(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            colors = colors,
+            elevation = elevation
+        ) {
             Column(modifier = Modifier.padding(CryptoDimens.spacingM), content = content)
         }
     } else {

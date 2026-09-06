@@ -4,6 +4,9 @@
     <string name="exchange_list_title">Exchanges</string>
     <string name="exchange_list_empty">Nenhuma exchange encontrada</string>
     <string name="exchange_list_about_content_description">Sobre mim</string>
+    <string name="exchange_list_search_placeholder">Buscar exchange</string>
+    <string name="exchange_list_search_clear_content_description">Limpar busca</string>
+    <string name="exchange_list_search_empty">Nenhuma exchange encontrada para \"%1$s\"</string>
 
     <string name="exchange_detail_title_fallback">Detalhes</string>
     <string name="exchange_detail_back_content_description">Voltar</string>

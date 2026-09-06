@@ -85,7 +85,11 @@ private fun CryptoButtonPreview() {
     CryptoPreviewWrapper {
         Column(verticalArrangement = Arrangement.spacedBy(CryptoDimens.spacingS)) {
             CryptoButton(text = "Ver detalhes", onClick = {})
-            CryptoButton(text = "Ver detalhes", onClick = {}, variant = CryptoButtonVariant.Secondary)
+            CryptoButton(
+                text = "Ver detalhes",
+                onClick = {},
+                variant = CryptoButtonVariant.Secondary
+            )
             CryptoButton(text = "Carregando", onClick = {}, isLoading = true)
             CryptoButton(text = "Desabilitado", onClick = {}, enabled = false)
         }
